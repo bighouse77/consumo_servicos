@@ -25,12 +25,20 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  TextEditingController _controllerCEP = TextEditingController();
+
+  String _resultado = " ";
+
   // async, pois eu não sei quanto tempo o servidor irá demorar para responder
   // comunicação assincrona
   _recuperarCep() async {
-    String cep = "13606662";
-    String url = "https://viacep.com.br/ws/${cep}/json/";
+    String cep = " ";
+    
+    setState(() {
+      cep = _controllerCEP.text;
+    });
 
+    String url = "https://viacep.com.br/ws/${cep}/json/";
     http.Response response;
 
     // await, quer dizer que iremos aguardar a resposta do servidor quando
@@ -60,9 +68,12 @@ class _HomeState extends State<Home> {
     String bairro = retorno["bairro"];
     String localidade = retorno["localidade"];
 
+    setState(() {
+      _resultado = "${logradouro}, ${bairro}, ${localidade}";
+    });
+
     print(
-      "Logradouro: ${logradouro}, Bairro: ${bairro}, Localidade: ${localidade}"
-    );
+        "Logradouro: ${logradouro}, Bairro: ${bairro}, Localidade: ${localidade}");
   }
 
   @override
@@ -73,10 +84,16 @@ class _HomeState extends State<Home> {
           padding: EdgeInsets.all(40),
           child: Column(
             children: [
+              TextField(
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(labelText: "Digite seu CEP"),
+                controller: _controllerCEP,
+              ),
               RaisedButton(
                 child: Text("Clique aqui!"),
                 onPressed: _recuperarCep,
-              )
+              ),
+              Text(_resultado),
             ],
           ),
         ));
